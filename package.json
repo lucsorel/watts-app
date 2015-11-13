@@ -1,0 +1,30 @@
+{
+  "name": "watts-app",
+  "version": "0.0.1",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+      "test": "node_modules/.bin/mocha -R spec test/*test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucsorel/watts-app.git"
+  },
+  "keywords": [
+    "energy",
+    "monitoring",
+    "reactive programming",
+    "bigdata",
+    "map-reduce",
+    "demonstration"
+  ],
+  "author": "Luc Sorel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lucsorel/watts-app/issues"
+  },
+  "homepage": "https://github.com/lucsorel/watts-app#readme",
+  "devDependencies": {
+    "mocha": "^2.3.3"
+  }
+}
