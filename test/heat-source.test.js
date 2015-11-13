@@ -17,7 +17,7 @@ assert.throwMessage = function(test, message, logErrorMessage) {
     });
 }
 
-describe.only('HeatSource', function() {
+describe('HeatSource', function() {
     describe('# construction', function() {
         var morningActivity = new Activity(10, 12),
             afternoonActivity = new Activity(14, 16);

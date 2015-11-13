@@ -67,11 +67,12 @@ describe('Activity', function() {
     describe('# isOn()', function() {
         var activity = new Activity(10.5, 11.5);
 
-        it.only('should return true when testing between the start and the end hours', function() {
+        it('should return true when testing between the start and the end hours', function() {
             assert.equal(true, activity.isOn(10.5));
             assert.equal(true, activity.isOn(11));
             assert.equal(true, activity.isOn(11.5));
         });
+
         it('should return false when testing between the start and the end hours', function() {
             assert.equal(false, activity.isOn(10.49));
             assert.equal(false, activity.isOn(11.51));
