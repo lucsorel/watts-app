@@ -67,6 +67,9 @@ describe('HeatSource', function() {
                 new HeatSource('furnace', 16, '1', [morningActivity, afternoonActivity]);
             }, 'inertia duration must be a positive number');
             assert.throwMessage(function() {
+                new HeatSource('furnace', 16, 0, [morningActivity, afternoonActivity]);
+            }, 'inertia duration must be a positive number');
+            assert.throwMessage(function() {
                 new HeatSource('furnace', 16, -1, [morningActivity, afternoonActivity]);
             }, 'inertia duration must be a positive number');
         });

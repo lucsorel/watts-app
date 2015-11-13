@@ -42,6 +42,35 @@ Activity.prototype.isOn = function (hour) {
     return this.startHour <= hour && hour <= this.endHour;
 };
 
+Activity.prototype.heatContributionFactor = function(hour, inertiaDuration) {
+    assertDayHour(hour, 'hour must be in [0, 24[');
+    assert.equal(true, ('number' === typeof inertiaDuration) && 0 < inertiaDuration, 'inertia duration must be a positive number');
+
+    // updates the sampling hour to account for the activity of the previous day
+    if (hour < this.startHour) {
+        hour += 24;
+    }
+
+    var contributionFactor;
+    if (this.isOn(hour)) {
+        contributionFactor = Math.min(hour - this.startHour, inertiaDuration) / inertiaDuration;
+    }
+    else {
+        // the decay time is the min between the inertia duration and the activity duration
+        var decayTime = Math.min(inertiaDuration, this.endHour - this.startHour);
+
+        // the ratio concerning the decrease of the contribution
+        var decayRatio = Math.max(0, decayTime - (hour-this.endHour)) / decayTime;
+
+        // the max temperature may have not been reached by the source if the
+        // activity time was less than the inertia duration
+        var startupRatio = decayTime / inertiaDuration;
+        contributionFactor = startupRatio * decayRatio;
+    }
+
+    return contributionFactor;
+};
+
 /**
  * Models a heat source which contributes to the heat of its environment
  *
@@ -54,7 +83,7 @@ function HeatSource(name, temperature, inertiaDuration, activities) {
     // business rules
     assert.equal(true, ('string' === typeof name) && name.length > 0, 'a name must be defined');
     assert.equal(true, ('number' === typeof temperature), 'temperature must be a number');
-    assert.equal(true, ('number' === typeof inertiaDuration) && 0 <= inertiaDuration, 'inertia duration must be a positive number');
+    assert.equal(true, ('number' === typeof inertiaDuration) && 0 < inertiaDuration, 'inertia duration must be a positive number');
     assert.equal(true, (Array.isArray(activities)) && activities.length > 0, 'some activities must be defined');
     activities.forEach(function(activity) {
         assert.equal(true, activity instanceof Activity, 'activity should be instance of Activity');

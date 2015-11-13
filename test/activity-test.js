@@ -89,4 +89,28 @@ describe('Activity', function() {
                 'hour must be in [0, 24[');
         });
     });
+
+    describe.only('# heatContributionFactor()', function() {
+        var activity = new Activity(10, 14);
+
+        it('# with an inertia duration shorter than the activity duration', function() {
+            var inertia = 1;
+            // warm-up
+            assert.equal(0, activity.heatContributionFactor(10, inertia), 'no contribution at startup');
+            assert.equal(0.25, activity.heatContributionFactor(10 + (0.25 * inertia), inertia), 'quarter contribution after quarter inertia duration');
+            assert.equal(0.5, activity.heatContributionFactor(10 + (0.5 * inertia), inertia), 'half contribution after half inertia duration');
+            assert.equal(0.75, activity.heatContributionFactor(10 + (0.75 * inertia), inertia), '3/4 contribution after 3/4 inertia duration');
+
+            // plateau
+            assert.equal(1, activity.heatContributionFactor(10 + inertia, inertia), 'max contribution at inertia duration');
+            assert.equal(1, activity.heatContributionFactor(12, inertia), 'max contribution after inertia duration, before end hour');
+            assert.equal(1, activity.heatContributionFactor(13, inertia), 'max contribution after inertia duration, before end hour');
+
+            // decay
+            assert.equal(1 - 0.25, activity.heatContributionFactor(14 + (0.25 * inertia), inertia), '3/4 contribution after 1/4 decay');
+            assert.equal(1 - 0.5, activity.heatContributionFactor(14 + (0.5 * inertia), inertia), 'half contribution after half decay');
+            assert.equal(1 - 0.75, activity.heatContributionFactor(14 + (0.75 * inertia), inertia), '3/4 contribution after 1/4 decay');
+            assert.equal(0, activity.heatContributionFactor(14 + inertia, inertia), 'no contribution after end hour + inertia duration');
+        });
+    });
 });
