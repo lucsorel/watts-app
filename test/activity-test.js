@@ -1,20 +1,8 @@
 'use strict';
 
-var assert = require('assert'),
+var assert = require('./assert-utils.js'),
     HeatSources = require('../factory/heat-sources.js'),
     Activity = HeatSources.Activity;
-
-// adds an assertion utility for thrown errors
-assert.throwMessage = function(test, message, logErrorMessage) {
-    assert.throws(test, function(error) {
-        if (true === logErrorMessage) {
-            console.log(error.toString());
-        }
-
-        assert.equal(true, error.toString().indexOf(message) > -1, 'error message must contain ' + message);
-        return true;
-    });
-}
 
 describe('Activity', function() {
     describe('# construction', function() {

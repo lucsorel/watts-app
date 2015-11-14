@@ -1,21 +1,9 @@
 'use strict';
 
-var assert = require('assert'),
+var assert = require('./assert-utils.js'),
     HeatSources = require('../factory/heat-sources.js'),
     HeatSource = HeatSources.HeatSource,
     Activity = HeatSources.Activity;
-
-// adds an assertion utility for thrown errors
-assert.throwMessage = function(test, message, logErrorMessage) {
-    assert.throws(test, function(error) {
-        if (true === logErrorMessage) {
-            console.log(error.toString());
-        }
-
-        assert.equal(true, error.toString().indexOf(message) > -1, 'error message must contain ' + message);
-        return true;
-    });
-}
 
 describe('HeatSource', function() {
     describe('# construction', function() {
@@ -86,7 +74,7 @@ describe('HeatSource', function() {
             }, 'some activities must be defined');
             assert.throwMessage(function() {
                 new HeatSource('furnace', 16, 1, [morningActivity, {startHour: 12, endHour: 16}]);
-            }, 'activity should be instance of Activity');
+            }, 'activity should be an instance of Activity');
         });
     });
 
@@ -198,7 +186,7 @@ describe('HeatSource', function() {
             // noon decays while afternoon starts
             assert.equal(5, furnace.heatContribution(14.5), 'half contribution of decaying noon at afternoon start-up');
 
-            // afternoon activity only
+            // just the afternoon activity
             assert.equal(5, furnace.heatContribution(15), 'half contribution of afternoon warm-up');
             assert.equal(10, furnace.heatContribution(15.5), 'full contribution of afternoon activity');
             assert.equal(10, furnace.heatContribution(16), 'full contribution at afternoon end hour');

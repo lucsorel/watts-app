@@ -1,5 +1,6 @@
 'use strict';
 
+// used to check business rules when constructing heat sources and activities
 var assert = require('assert');
 
 /**
@@ -133,7 +134,7 @@ function HeatSource(name, temperature, inertiaDuration, activities) {
     assert.equal(true, ('number' === typeof inertiaDuration) && 0 < inertiaDuration, 'inertia duration must be a positive number');
     assert.equal(true, (Array.isArray(activities)) && activities.length > 0, 'some activities must be defined');
     activities.forEach(function(activity) {
-        assert.equal(true, activity instanceof Activity, 'activity should be instance of Activity');
+        assert.equal(true, activity instanceof Activity, 'activity should be an instance of Activity');
     });
 
     this.name = name;
