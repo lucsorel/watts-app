@@ -129,7 +129,7 @@ describe('Activity', function() {
             assert.equal(0, activity.heatContributionFactor(activity.endHour + (0.5 * inertia), inertia), 'activity contribution stops before inertia duration becauseit did not reach its full contribution');
         });
 
-        it('# accounts for the decay of the activity of the previous day', function() {
+        it('should account for the decay of the activity of the previous day', function() {
             var activity = new Activity(18, 23);
             var inertia = 2;
 
@@ -138,6 +138,42 @@ describe('Activity', function() {
             assert.equal(0.5, activity.heatContributionFactor(0, inertia), 'accounts for the decay of the previous day');
             assert.equal(0.25, activity.heatContributionFactor(0.5, inertia), 'accounts for the decay of the previous day');
             assert.equal(0, activity.heatContributionFactor(1, inertia), 'the decay of the previous day has stopped');
+        });
+
+        it('should fail with invalid parameters', function() {
+            var activity = new Activity(10, 14);
+            var inertia = 1;
+
+            // invalid sample hour
+            assert.throwMessage(
+                function() {activity.heatContributionFactor(undefined, inertia);},
+                'hour must be in [0, 24[');
+            assert.throwMessage(
+                function() {activity.heatContributionFactor(null, inertia);},
+                'hour must be in [0, 24[');
+            assert.throwMessage(
+                function() {activity.heatContributionFactor('1', inertia);},
+                'hour must be in [0, 24[');
+            assert.throwMessage(
+                function() {activity.heatContributionFactor(-1, inertia);},
+                'hour must be in [0, 24[');
+
+            // invalid inertia duration
+            assert.throwMessage(
+                function() {activity.heatContributionFactor(12, undefined);},
+                'inertia duration must be a positive number');
+            assert.throwMessage(
+                function() {activity.heatContributionFactor(12, null);},
+                'inertia duration must be a positive number');
+            assert.throwMessage(
+                function() {activity.heatContributionFactor(12, '10');},
+                'inertia duration must be a positive number');
+            assert.throwMessage(
+                function() {activity.heatContributionFactor(12, 0);},
+                'inertia duration must be a positive number');
+            assert.throwMessage(
+                function() {activity.heatContributionFactor(12, -1);},
+                'inertia duration must be a positive number');
         });
     });
 });
