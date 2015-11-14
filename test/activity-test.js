@@ -177,7 +177,7 @@ describe('Activity', function() {
         });
     });
 
-    describe.only('# heatContributionFormula', function() {
+    describe('# heatContributionFormula', function() {
         var activity = new Activity(10, 12);
         it('should have a "concise" decay expression when inertia < activity duration', function() {
             assert.equal('(10 <= t and t <= 12) ? min(t - 10, 1.5)/1.5 : max(0, 13.5 - t - ((t < 10) ? 24 : 0))/1.5',

@@ -90,6 +90,12 @@ var FORMULA_TEMPLATES = {
     decayRatio: 'max(0, DECAY_ORIGIN - t - ((t < START) ? 24 : 0))/DECAY_TIME'
 };
 
+/**
+ * Produces the formula for the heat temperature contribution factor
+ *
+ * @param inertiaDuration
+ * @return a textual formula where t is the hour of the day in [0, 24[
+ */
 Activity.prototype.heatContributionFormula = function(inertiaDuration) {
     assert.equal(true, ('number' === typeof inertiaDuration) && 0 < inertiaDuration, 'inertia duration must be a positive number');
     var formula = FORMULA_TEMPLATES.formula;
@@ -171,6 +177,22 @@ HeatSource.prototype.heatContribution = function(hour) {
         return contribution + activity.heatContributionFactor(hour, inertiaDuration);
     }, 0);
 };
+
+/**
+ * Produces the formula for the heat temperature contribution
+ *
+ * @return a textual formula where t is the hour of the day in [0, 24[
+ */
+HeatSource.prototype.heatContributionFormula = function() {
+    var inertiaDuration = this.inertiaDuration,
+        activitiesFormula = [];
+
+    this.activities.forEach(function(activity) {
+        activitiesFormula.push(activity.heatContributionFormula(inertiaDuration));
+    });
+
+    return this.temperature + '*((' + activitiesFormula.join(') + (') + '))'
+}
 
 module.exports = {
     Activity: Activity,

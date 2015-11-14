@@ -229,4 +229,19 @@ describe('HeatSource', function() {
             assert.equal(10, furnace.heatContribution(6), 'full contribution of morning activity');
         });
     });
+
+    describe('# heatContributionFormula()', function() {
+        it('should sum the activities contribution factors', function() {
+            var morningActivity = new Activity(10, 12.5),
+                // noon warm-up overlaps morning activity
+                noonActivity = new Activity(12, 14),
+                // noon decay overlaps afternoon activity
+                afternoonActivity = new Activity(14.5, 16),
+                inertiaDuration = 1,
+                furnace = new HeatSource('furnace', 10, inertiaDuration, [morningActivity, noonActivity, afternoonActivity]);
+
+            assert.equal('10*(((10 <= t and t <= 12.5) ? min(t - 10, 1)/1 : max(0, 13.5 - t - ((t < 10) ? 24 : 0))/1) + ((12 <= t and t <= 14) ? min(t - 12, 1)/1 : max(0, 15 - t - ((t < 12) ? 24 : 0))/1) + ((14.5 <= t and t <= 16) ? min(t - 14.5, 1)/1 : max(0, 17 - t - ((t < 14.5) ? 24 : 0))/1))',
+                furnace.heatContributionFormula(), 'the source temperature times the some of all the activities effects');
+        });
+    });
 });
