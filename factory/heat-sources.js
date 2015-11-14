@@ -42,6 +42,10 @@ Activity.prototype.isOn = function (hour) {
     return this.startHour <= hour && hour <= this.endHour;
 };
 
+Activity.prototype.decayTime = function(inertiaDuration) {
+    return Math.min(inertiaDuration, this.endHour - this.startHour);
+}
+
 /**
  * Computes the heat contribution factor of the activity at the given time. The contribution
  * factor also depends on the inertia duration, which is a characteristic of the heat source,
@@ -61,7 +65,7 @@ Activity.prototype.heatContributionFactor = function(hour, inertiaDuration) {
     }
     else {
         // the decay time is the min between the inertia duration and the activity duration
-        var decayTime = Math.min(inertiaDuration, this.endHour - this.startHour);
+        var decayTime = this.decayTime(inertiaDuration);
 
         // updates the sampling hour to account for the activity of the previous day
         if (hour < this.startHour) {
@@ -69,7 +73,7 @@ Activity.prototype.heatContributionFactor = function(hour, inertiaDuration) {
         }
 
         // the ratio concerning the decrease of the contribution
-        var decayRatio = Math.max(0, decayTime - (hour-this.endHour)) / decayTime;
+        var decayRatio = Math.max(0, decayTime - (hour - this.endHour)) / decayTime;
 
         // the max temperature may have not been reached by the source if the
         // activity time was less than the inertia duration
@@ -79,6 +83,34 @@ Activity.prototype.heatContributionFactor = function(hour, inertiaDuration) {
 
     return contributionFactor;
 };
+
+var FORMULA_TEMPLATES = {
+    formula: '(START <= t and t <= END) ? IS_ON : IS_OFF',
+    isOnFactor: 'min(t - START, INERTIA)/INERTIA',
+    decayRatio: 'max(0, DECAY_ORIGIN - t - ((t < START) ? 24 : 0))/DECAY_TIME'
+};
+
+Activity.prototype.heatContributionFormula = function(inertiaDuration) {
+    assert.equal(true, ('number' === typeof inertiaDuration) && 0 < inertiaDuration, 'inertia duration must be a positive number');
+    var formula = FORMULA_TEMPLATES.formula;
+
+    // computes the components of the contribution factor when the activity is off
+    var decayTime = this.decayTime(inertiaDuration);
+    var isOffFactor;
+    if (decayTime < inertiaDuration) {
+        isOffFactor = '(DECAY_TIME/INERTIA)*' + FORMULA_TEMPLATES.decayRatio;
+    }
+    else {
+        isOffFactor = FORMULA_TEMPLATES.decayRatio;
+    }
+
+    // merges the values in the formula
+    formula = formula.replace('IS_ON', FORMULA_TEMPLATES.isOnFactor).replace('IS_OFF', isOffFactor)
+        .replace(/DECAY_TIME/g, decayTime).replace(/INERTIA/g, inertiaDuration)
+        .replace(/DECAY_ORIGIN/g, decayTime + this.endHour).replace(/START/g, this.startHour).replace(/END/g, this.endHour)
+
+    return formula;
+}
 
 /**
  * Models a heat source which contributes to the heat of its environment

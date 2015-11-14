@@ -176,4 +176,23 @@ describe('Activity', function() {
                 'inertia duration must be a positive number');
         });
     });
+
+    describe.only('# heatContributionFormula', function() {
+        var activity = new Activity(10, 12);
+        it('should have a "concise" decay expression when inertia < activity duration', function() {
+            assert.equal('(10 <= t and t <= 12) ? min(t - 10, 1.5)/1.5 : max(0, 13.5 - t - ((t < 10) ? 24 : 0))/1.5',
+                activity.heatContributionFormula(1.5), 'concise decay ratio');
+        });
+
+        it('should have a "complex" decay expression when inertia >= activity duration', function() {
+            assert.equal('(10 <= t and t <= 12) ? min(t - 10, 3)/3 : (2/3)*max(0, 14 - t - ((t < 10) ? 24 : 0))/2',
+                activity.heatContributionFormula(3), 'complex decay ratio');
+        });
+
+        it('should have a decay from the previous day', function() {
+            var overlappingActivity = new Activity(18, 23);
+            assert.equal('(18 <= t and t <= 23) ? min(t - 18, 3)/3 : max(0, 26 - t - ((t < 18) ? 24 : 0))/3',
+                overlappingActivity.heatContributionFormula(3), 'overlapping decay');
+        });
+    });
 });
