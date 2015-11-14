@@ -42,6 +42,15 @@ Activity.prototype.isOn = function (hour) {
     return this.startHour <= hour && hour <= this.endHour;
 };
 
+/**
+ * Computes the heat contribution factor of the activity at the given time. The contribution
+ * factor also depends on the inertia duration, which is a characteristic of the heat source,
+ * given as a parameter in this method
+ *
+ * @param hour
+ * @param inertiaDuration
+ * @return a float value between 0 (no contribution) and 1 (full contribution)
+ */
 Activity.prototype.heatContributionFactor = function(hour, inertiaDuration) {
     assertDayHour(hour, 'hour must be in [0, 24[');
     assert.equal(true, ('number' === typeof inertiaDuration) && 0 < inertiaDuration, 'inertia duration must be a positive number');
@@ -103,11 +112,32 @@ function HeatSource(name, temperature, inertiaDuration, activities) {
  * @return true if at least one of the activities is on
  */
 HeatSource.prototype.isOn = function(hour) {
+    // business rules
     assertDayHour(hour, 'hour must be in [0, 24[');
 
     return this.activities.reduce(function(isOn, activity) {
         return isOn || activity.isOn(hour);
     }, false);
+};
+
+/**
+ * Computes the heat contribution of the source at the given moment by summing
+ * the contribution factors of all its activities and multiplying it by the
+ * source heat.
+ *
+ * @param hour an hour of the day as a numeric value in [0, 24[
+ * @return the heat contribution of the source
+ */
+HeatSource.prototype.heatContribution = function(hour) {
+    // business rules
+    assertDayHour(hour, 'hour must be in [0, 24[');
+
+    // multiplies the source temperature contribution by the sum of the contribution
+    // factors of all the activities
+    var inertiaDuration = this.inertiaDuration;
+    return this.temperature * this.activities.reduce(function(contribution, activity) {
+        return contribution + activity.heatContributionFactor(hour, inertiaDuration);
+    }, 0);
 };
 
 module.exports = {

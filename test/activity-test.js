@@ -90,7 +90,7 @@ describe('Activity', function() {
         });
     });
 
-    describe.only('# heatContributionFactor()', function() {
+    describe('# heatContributionFactor()', function() {
         it('# with an inertia duration shorter than the activity duration', function() {
             var activity = new Activity(10, 14);
             var inertia = 1;
