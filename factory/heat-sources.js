@@ -9,7 +9,7 @@ var assert = require('assert');
  * @param message
  */
 function assertDayHour(value, message) {
-    assert.equal(true, ('number' === typeof value) && value > 0 && value < 24, message);
+    assert.equal(true, ('number' === typeof value) && value >= 0 && value < 24, message);
 }
 
 /**
@@ -46,11 +46,6 @@ Activity.prototype.heatContributionFactor = function(hour, inertiaDuration) {
     assertDayHour(hour, 'hour must be in [0, 24[');
     assert.equal(true, ('number' === typeof inertiaDuration) && 0 < inertiaDuration, 'inertia duration must be a positive number');
 
-    // updates the sampling hour to account for the activity of the previous day
-    if (hour < this.startHour) {
-        hour += 24;
-    }
-
     var contributionFactor;
     if (this.isOn(hour)) {
         contributionFactor = Math.min(hour - this.startHour, inertiaDuration) / inertiaDuration;
@@ -58,6 +53,11 @@ Activity.prototype.heatContributionFactor = function(hour, inertiaDuration) {
     else {
         // the decay time is the min between the inertia duration and the activity duration
         var decayTime = Math.min(inertiaDuration, this.endHour - this.startHour);
+
+        // updates the sampling hour to account for the activity of the previous day
+        if (hour < this.startHour) {
+            hour += 24;
+        }
 
         // the ratio concerning the decrease of the contribution
         var decayRatio = Math.max(0, decayTime - (hour-this.endHour)) / decayTime;

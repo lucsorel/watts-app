@@ -91,13 +91,12 @@ describe('Activity', function() {
     });
 
     describe.only('# heatContributionFactor()', function() {
-        var activity = new Activity(10, 14);
-
         it('# with an inertia duration shorter than the activity duration', function() {
+            var activity = new Activity(10, 14);
             var inertia = 1;
             // warm-up
             assert.equal(0, activity.heatContributionFactor(10, inertia), 'no contribution at startup');
-            assert.equal(0.25, activity.heatContributionFactor(10 + (0.25 * inertia), inertia), 'quarter contribution after quarter inertia duration');
+            assert.equal(0.25, activity.heatContributionFactor(10 + (0.25 * inertia), inertia), '1/4 contribution after 1/4 inertia duration');
             assert.equal(0.5, activity.heatContributionFactor(10 + (0.5 * inertia), inertia), 'half contribution after half inertia duration');
             assert.equal(0.75, activity.heatContributionFactor(10 + (0.75 * inertia), inertia), '3/4 contribution after 3/4 inertia duration');
 
@@ -111,6 +110,34 @@ describe('Activity', function() {
             assert.equal(1 - 0.5, activity.heatContributionFactor(14 + (0.5 * inertia), inertia), 'half contribution after half decay');
             assert.equal(1 - 0.75, activity.heatContributionFactor(14 + (0.75 * inertia), inertia), '3/4 contribution after 1/4 decay');
             assert.equal(0, activity.heatContributionFactor(14 + inertia, inertia), 'no contribution after end hour + inertia duration');
+        });
+
+        it('# with an inertia duration longer than the activity duration', function() {
+            var activity = new Activity(10, 11);
+            var inertia = 2;
+
+            // warm-up
+            assert.equal(0, activity.heatContributionFactor(activity.startHour, inertia), 'no contribution at startup');
+            assert.equal(true, activity.isOn(activity.startHour + (0.25 * inertia)), 'warming-up when activity is on');
+            assert.equal(0.25, activity.heatContributionFactor(activity.startHour + (0.25 * inertia), inertia), '1/4 contribution after 1/4 inertia duration');
+            assert.equal(0.5, activity.heatContributionFactor(activity.startHour + (0.5 * inertia), inertia), 'half contribution after half inertia duration');
+
+            // decay
+            assert.equal(0.5, activity.heatContributionFactor(activity.endHour, inertia), 'partial contribution when activity stops');
+            assert.equal(0.25, activity.heatContributionFactor(activity.endHour + (0.25 * inertia), inertia), 'partial contribution when activity stops');
+            assert.equal(false, activity.isOn(activity.endHour + (0.25 * inertia)), 'decaying when activity is off');
+            assert.equal(0, activity.heatContributionFactor(activity.endHour + (0.5 * inertia), inertia), 'activity contribution stops before inertia duration becauseit did not reach its full contribution');
+        });
+
+        it('# accounts for the decay of the activity of the previous day', function() {
+            var activity = new Activity(18, 23);
+            var inertia = 2;
+
+            assert.equal(1, activity.heatContributionFactor(activity.endHour, inertia), 'full contribution when activity stops');
+            assert.equal(0.75, activity.heatContributionFactor(23.5, inertia), 'starts decaying');
+            assert.equal(0.5, activity.heatContributionFactor(0, inertia), 'accounts for the decay of the previous day');
+            assert.equal(0.25, activity.heatContributionFactor(0.5, inertia), 'accounts for the decay of the previous day');
+            assert.equal(0, activity.heatContributionFactor(1, inertia), 'the decay of the previous day has stopped');
         });
     });
 });
