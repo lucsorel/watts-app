@@ -3,7 +3,7 @@
 var assert = require('assert');
 
 // adds an assertion utility for thrown errors
-assert.prototype.throwMessage = function(test, message, logErrorMessage) {
+assert.throwMessage = function(test, message, logErrorMessage) {
     assert.throws(test, function(error) {
         if (true === logErrorMessage) {
             console.log(error.toString());
