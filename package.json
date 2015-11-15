@@ -1,10 +1,10 @@
 {
   "name": "watts-app",
   "version": "0.0.1",
-  "description": "",
+  "description": "A sample application demonstrating how big data and connected objects can help energy monitoring.",
   "main": "server.js",
   "scripts": {
-      "test": "node_modules/.bin/mocha -R spec test/*test.js"
+    "test": "node_modules/.bin/mocha -R spec test/*test.js"
   },
   "repository": {
     "type": "git",
