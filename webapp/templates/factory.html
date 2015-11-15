@@ -1,40 +1,58 @@
 <div class="container">
-    <div class="page-header">
-        <h2>Factory modeling</h2>
-    </div>
-
-    <div class="row-fluid">
-        <div class="col-md-5 well">
-            <div>Name: <b>{{::factoryCtrl.factory.name}}</b></div>
-            <br>
-            <div class="">Heat sources:</div>
-            <table class="table table-striped">
-                <thead>
-                    <th>Device</th>
-                    <th>heat</th>
-                    <th>factor</th>
-                    <th>inertia</th>
-                    <th>activities</th>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="heatSource in factoryCtrl.factory.heatSources">
-                        <td>{{::heatSource.heatSource.name}}</td>
-                        <td>{{::heatSource.heatSource.temperature}}°C</td>
-                        <td>{{::heatSource.weight | percentage}}</td>
-                        <td>{{::heatSource.heatSource.inertiaDuration}} hour</td>
-                        <td>
-                            <span ng-repeat="activity in heatSource.heatSource.activities">
-                            {{::activity | activity}}
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="col-md-7 well">
-            <div class="">Actual evolution of the factory temperature (°C) during the day (hour)</div>
-            <div id="factoryTemperaturePlot"></div>
+    <h2>Monitoring and prediction</h2>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well">
+                <p>The <b>{{::factoryCtrl.factory.name}}</b> factory is equipped with several probes which monitor different parameters:</p>
+                <ul>
+                    <li>one which monitors the <b>factory global temperature</b></li>
+                    <li>one per device, simply detecting whether <b>the device is on or off</b></li>
+                </ul>
+                <p>
+                    <b><i>Watts</i> app</b> aggregates the probes data by timelapses (half an hour) and process it to propose a temperature prediction model based only on the devices states.
+                </p>
+            </div>
         </div>
     </div>
+    <h2>Factory modeling</h2>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="well">
+                <div>Factory name: <b>{{::factoryCtrl.factory.name}}</b></div>
+                <br>
+                <div class="">Heat sources:</div>
+                <table class="table table-striped">
+                    <thead>
+                        <th>Device</th>
+                        <th>heat</th>
+                        <th>factor</th>
+                        <th>inertia</th>
+                        <th>activities</th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="heatSource in factoryCtrl.factory.heatSources">
+                            <td>{{::heatSource.heatSource.name}}</td>
+                            <td>{{::heatSource.heatSource.temperature}}°C</td>
+                            <td>{{::heatSource.weight | percentage}}</td>
+                            <td>{{::heatSource.heatSource.inertiaDuration}} hour</td>
+                            <td>
+                                <span ng-repeat="activity in heatSource.heatSource.activities">
+                                {{::activity | activity}}
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="well">
+                <div>Actual evolution of the factory temperature (°C) during the day (hour)</div>
+                <div id="factoryTemperaturePlot"></div>
+            </div>
+        </div>
+    </div>
+
 </div>

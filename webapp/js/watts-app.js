@@ -87,6 +87,8 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
     .controller('FactoryController', ['factory', 'socketAPI', function(factory, socketAPI) {
         var ctrl = this;
         ctrl.factory = factory;
+
+        // draws the factory temperature plot
         try {
             functionPlot({
                 target: '#factoryTemperaturePlot',
@@ -95,9 +97,7 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
                 yDomain: [10, 24],
                 data: [{
                     range: [0, 24],
-                    fn: math.eval(factory.formula),
-                    sampler: 'builtIn',
-                    graphType: 'polyline'
+                    fn: math.eval(factory.formula)
                 }]
             });
         }
