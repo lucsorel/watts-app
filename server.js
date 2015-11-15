@@ -6,11 +6,7 @@ var express = require('express'),
 
 // serves the webapp
 wattsApp.use(express.static('webapp'));
-
-// confirmation message until a true html landing page is necessary
-wattsApp.get('/', function(request, response) {
-  response.send('The web server for the Wahls protocol companion is up!');
-});
+wattsApp.use(express.static('node_modules/function-plot/dist'));
 
 // starts the web aplication server on the configured HTTP port
 http.listen(3030, function() {

@@ -1,1 +1,40 @@
-Factory
+<div class="container">
+    <div class="page-header">
+        <h2>Factory modeling</h2>
+    </div>
+
+    <div class="row-fluid">
+        <div class="col-md-5 well">
+            <div>Name: <b>{{::factoryCtrl.factory.name}}</b></div>
+            <br>
+            <div class="">Heat sources:</div>
+            <table class="table table-striped">
+                <thead>
+                    <th>Device</th>
+                    <th>heat</th>
+                    <th>factor</th>
+                    <th>inertia</th>
+                    <th>activities</th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="heatSource in factoryCtrl.factory.heatSources">
+                        <td>{{::heatSource.heatSource.name}}</td>
+                        <td>{{::heatSource.heatSource.temperature}}°C</td>
+                        <td>{{::heatSource.weight | percentage}}</td>
+                        <td>{{::heatSource.heatSource.inertiaDuration}} hour</td>
+                        <td>
+                            <span ng-repeat="activity in heatSource.heatSource.activities">
+                            {{::activity | activity}}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-7 well">
+            <div class="">Actual evolution of the factory temperature (°C) during the day (hour)</div>
+            <div id="factoryTemperaturePlot"></div>
+        </div>
+    </div>
+</div>

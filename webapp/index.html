@@ -10,13 +10,15 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/style/watts-app.less" type="text/less">
 
-    <!-- loads socket.io before AngularJS -->
+    <!-- loads library required by AngularJS beforehand -->
     <script src="/socket.io/socket.io.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mathjs/2.4.1/math.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="/js/function-plot.js"></script>
   </head>
 
   <body>
-    <div ui-view="">
-    </div>
+    <div ui-view=""></div>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js" data-env="development"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

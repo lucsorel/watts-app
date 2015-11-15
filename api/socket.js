@@ -26,7 +26,7 @@ module.exports = function(Factories) {
     factory.addHeatSource(furnace, furnaceWeight).addHeatSource(press, pressWeight);
 
     // adds the formula as a property of the factory
-    factory.formula = factory.getTemperatureFormula();
+    factory.formula = 'f(t) = ' + factory.getTemperatureFormula();
 
     /**
      * Handles the connected websocket

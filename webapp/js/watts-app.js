@@ -47,6 +47,7 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
 
         $urlRouterProvider.otherwise('/factory');
     }])
+    // service to help navigation bar highlighting
     .service('navigationService', ['$q', function($q) {
         var navigationService = {
             page: { name: null }
@@ -58,17 +59,52 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
 
         return navigationService;
     }])
+    .filter('percentage', function() {
+        return function(input) {
+            if (isNaN(input)) {
+                return input;
+            }
+            return Math.floor(input * 100) + '%';
+        };
+    })
 
+    .filter('activity', function() {
+        return function(activity) {
+            if (('object' !== typeof activity) || isNaN(activity.startHour) || isNaN(activity.endHour)) {
+                return activity;
+            }
+
+            return activity.startHour + '-' + activity.endHour + 'h  ';
+        };
+    })
+    // navigation controller
     .controller('NavigationController', ['factory', 'navigationService', function(factory, navigationService) {
         var ctrl = this;
         ctrl.factory = factory;
         ctrl.page = navigationService.page;
-        ctrl.setViewName = navigationService.setViewName;
     }])
+    // factory details controller
     .controller('FactoryController', ['factory', 'socketAPI', function(factory, socketAPI) {
-        // navigationService.setViewName('factory');
         var ctrl = this;
         ctrl.factory = factory;
+        try {
+            functionPlot({
+                target: '#factoryTemperaturePlot',
+                disableZoom: true,
+                xDomain: [0, 24],
+                yDomain: [10, 24],
+                data: [{
+                    range: [0, 24],
+                    fn: math.eval(factory.formula),
+                    sampler: 'builtIn',
+                    graphType: 'polyline'
+                }]
+            });
+        }
+        catch (err) {
+            console.log(err);
+            alert(err);
+        }
     }])
 
 ;
