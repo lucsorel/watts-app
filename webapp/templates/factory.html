@@ -9,13 +9,13 @@
                     <li>one per device, simply detecting whether <b>the device is on or off</b></li>
                 </ul>
                 <p>
-                    <b><i>Watts</i> app</b> aggregates the probes data by timelapses (half an hour) and process it to propose a temperature prediction model based only on the devices states.
+                    <b><i>Watts</i> app</b> aggregates the probes data by timelapses and process it to propose a temperature prediction model based only on the devices states.
                 </p>
             </div>
         </div>
     </div>
-    <h2>Factory modeling</h2>
 
+    <h2>Factory modeling</h2>
     <div class="row">
         <div class="col-md-5">
             <div class="well">
@@ -55,4 +55,24 @@
         </div>
     </div>
 
+    <h2>Monitoring</h2>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well">
+                <button type="button" class="btn pull-right" ng-click="factoryCtrl.switchSampling()"
+                    ng-class="factoryCtrl.isSampling ? 'btn-danger' : 'btn-primary'">
+                    {{factoryCtrl.isSampling ? 'Stop' : 'Start'}} sampling
+                </button>
+                <p>Ok, let's start monitoring the factory!</p>
+                <table class="table-condensed table-hover table-bordered">
+                    <tr ng-repeat='key in factoryCtrl.lapseSampleKeys'>
+                        <th>{{key}}</th>
+                        <td ng-repeat='lapseSample in factoryCtrl.lapseSamples'>
+                            {{lapseSample[key]}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

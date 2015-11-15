@@ -105,6 +105,26 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
             console.log(err);
             alert(err);
         }
-    }])
 
+        ctrl.isSampling = false;
+        ctrl.switchSampling = function() {
+            ctrl.isSampling = !ctrl.isSampling;
+
+            socketAPI.emit(ctrl.isSampling ? 'sampling.start' : 'sampling.stop');
+        }
+
+        // flags the properties of the lapse samples to display them column-wise
+        ctrl.lapseSampleKeys = ['timeslot', 'meanT', 'stdT', 'nbSamples'];
+        factory.heatSources.forEach(function(factoryHeatSource) {
+            ctrl.lapseSampleKeys.push(factoryHeatSource.heatSource.name);
+        });
+
+        // flags the map-reduced samples
+        ctrl.lapseSamples = {};
+        function onSampleUpdate(lapseSample) {
+            ctrl.lapseSamples[lapseSample.id] = lapseSample;
+        }
+
+        socketAPI.on('lapseSample.update', onSampleUpdate);
+    }])
 ;

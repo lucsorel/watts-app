@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(Factories) {
+module.exports = function(Factories, Probes) {
     // business models
     var HeatSource = Factories.HeatSource,
         Activity = Factories.Activity,
@@ -38,6 +38,32 @@ module.exports = function(Factories) {
     return function(socket) {
         socket.on('factory.get', function(params, dataCallback) {
             dataCallback(factory);
+        });
+
+        var lapseSamples = [];
+        var probes = Probes(factory);
+        var probesSubscription = null;
+        socket.on('sampling.start', function() {
+            if (null === probesSubscription) {
+                probesSubscription = probes.events.subscribe(
+                    function (x) {
+                        console.log(x);
+                    },
+                    function (err) {
+                        console.log('Monitoring error: ' + err);
+                    },
+                    function () {
+                        console.log('Monitoring completed');
+                    });
+            }
+        });
+
+        // stops monitoring
+        socket.on('sampling.stop', function() {
+            if (null !== probesSubscription) {
+                probesSubscription.dispose();
+                probesSubscription = null;
+            }
         });
     }
 };
