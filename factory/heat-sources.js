@@ -33,6 +33,13 @@ Activity.prototype.isOn = function (hour) {
     return this.startHour <= hour && hour <= this.endHour;
 };
 
+/**
+ * Computes the decay time as the minimum between the given inertia duration and
+ * the activity duration.
+ *
+ * @param inertiaDuration
+ * @return the decay duration
+ */
 Activity.prototype.decayTime = function(inertiaDuration) {
     return Math.min(inertiaDuration, this.endHour - this.startHour);
 }
@@ -182,7 +189,7 @@ HeatSource.prototype.heatContributionFormula = function() {
         activitiesFormula.push(activity.heatContributionFormula(inertiaDuration));
     });
 
-    return this.temperature + '*((' + activitiesFormula.join(') + (') + '))'
+    return this.temperature + '*((' + activitiesFormula.join(') + (') + '))';
 }
 
 module.exports = {

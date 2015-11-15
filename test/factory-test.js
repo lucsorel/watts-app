@@ -173,21 +173,55 @@ describe('Factory', function() {
                 factory.getTemperature(14), 'full press noon and decayed furnace morning contributions');
 
             // furnace afternoon starts
-            assert.equal(13 + 2.5 + (4*0),
+            assert.equal(13 + 2.5 + (4*0) /* 15.5° */,
                 factory.getTemperature(15), 'full press noon contribution at afternoon furnace start-up');
-            assert.equal(13 + 2.5*(0.25/0.5) + 4*(0.25),
-                factory.getTemperature(15.25), 'decaying press noon and rising afternoon press contributions');
+            assert.equal(13 + 2.5*(0.25/0.5) + 4*(0.25) /* 15.25° */,
+                factory.getTemperature(15.25), 'noon press decays faster than afternoon press rises');
 
             // press noon stops
-            assert.equal(13 + 2.5*(0) + 4*(0.5),
+            assert.equal(13 + 2.5*(0) + 4*(0.5) /* 15° */,
                 factory.getTemperature(15.5), 'decayed press noon and half afternoon press contributions');
-            assert.equal(13 + (4*0.5*0.5),
+            assert.equal(13 + (4*0.5*0.5) /* 14° */,
                 factory.getTemperature(15.75), 'partial afternoon press decay contribution');
             assert.equal(13 + 4*0,
                 factory.getTemperature(16), 'fully-decayed afternoon press contribution');
 
             assert.equal(idleHeat, factory.getTemperature(16.5), 'idle temperature after all activities have decayed');
             assert.equal(idleHeat, factory.getTemperature(18), 'idle temperature after all activities have decayed');
+        });
+    });
+
+    describe('# getTemperatureFormula()', function() {
+        it('should produce the factory temperature formula', function() {
+            var morningActivity = new Activity(9, 13),
+                afternoonActivity = new Activity(15, 15.5),
+                furnaceHeat = 8,
+                furnaceInertia = 1,
+                furnaceWeight = 0.5,
+                furnace = new HeatSource('furnace', furnaceHeat, furnaceInertia, [morningActivity, afternoonActivity]);
+
+            var noonActivity = new Activity(12, 15),
+                pressHeat = 10,
+                pressInertia = 0.5,
+                pressWeight = 0.25,
+                press = new HeatSource('press', pressHeat, pressInertia, [noonActivity]);
+
+            // adds the heat sources with API-fluent style
+            var idleHeat = 13,
+                factory = new Factory('Ker Escuelle', idleHeat);
+            factory.addHeatSource(furnace, furnaceWeight).addHeatSource(press, pressWeight);
+
+            // logically builds the expected formula
+            var furnaceMorning = '(9 <= t and t <= 13) ? min(t - 9, 1)/1 : max(0, 14 - t - ((t < 9) ? 24 : 0))/1',
+                furnaceAfternoon = '(15 <= t and t <= 15.5) ? min(t - 15, 1)/1 : (0.5/1)*max(0, 16 - t - ((t < 15) ? 24 : 0))/0.5',
+                furnaceHeat = furnaceWeight + '*' + furnaceHeat + '*((' + furnaceMorning + ') + (' + furnaceAfternoon + '))',
+
+                pressNoon = '(12 <= t and t <= 15) ? min(t - 12, 0.5)/0.5 : max(0, 15.5 - t - ((t < 12) ? 24 : 0))/0.5',
+                pressHeat = pressWeight + '*' + pressHeat + '*((' + pressNoon + '))',
+                factoryHeat = idleHeat + ' + (' + furnaceHeat + ') + (' + pressHeat + ')';
+
+            assert.equal(factory.getTemperatureFormula(), factoryHeat,
+                'the temperature formula accounting for all the heat sources contributions');
         });
     });
 });

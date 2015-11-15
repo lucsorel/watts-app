@@ -59,10 +59,27 @@ Factory.prototype.addHeatSource = function(heatSource, weight) {
 Factory.prototype.getTemperature = function(hour) {
     // business rules
     assert.dayHour(hour);
+
+    // sums the idle temperature with the heat source contributions at the given moment
     return this.heatSources.reduce(function(temperature, factoryHeatSource) {
         return temperature + (factoryHeatSource.weight * factoryHeatSource.heatSource.heatContribution(hour));
     }, this.idleTemperature);
 };
+
+/**
+ * Produces the formula for the factory temperature evolution
+ *
+ * @return a textual formula where t is the hour of the day in [0, 24[
+ */
+Factory.prototype.getTemperatureFormula = function() {
+    var formulaElements = [this.idleTemperature];
+
+    this.heatSources.forEach(function(factoryHeatSource) {
+        formulaElements.push('(' + factoryHeatSource.weight + '*' + factoryHeatSource.heatSource.heatContributionFormula() + ')');
+    });
+
+    return formulaElements.join(' + ')
+}
 
 module.exports = {
     Factory: Factory,
