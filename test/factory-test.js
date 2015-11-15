@@ -120,4 +120,74 @@ describe('Factory', function() {
             }, 'heat source should be an instance of HeatSource');
         });
     });
+
+    describe('# getTemperature()', function() {
+        it('should account for the idle temperature and the contributions of all the source activities', function() {
+            var morningActivity = new Activity(9, 13),
+                afternoonActivity = new Activity(15, 15.5),
+                furnaceHeat = 8,
+                furnaceInertia = 1,
+                furnaceWeight = 0.5,
+                furnace = new HeatSource('furnace', furnaceHeat, furnaceInertia, [morningActivity, afternoonActivity]);
+
+            var noonActivity = new Activity(12, 15),
+                pressHeat = 10,
+                pressInertia = 0.5,
+                pressWeight = 0.25,
+                press = new HeatSource('press', pressHeat, pressInertia, [noonActivity]);
+
+            // adds the heat sources with API-fluent style
+            var idleHeat = 13,
+                factory = new Factory('Ker Escuelle', idleHeat);
+            factory.addHeatSource(furnace, furnaceWeight).addHeatSource(press, pressWeight);
+
+            assert.equal(idleHeat, factory.getTemperature(8), 'idle temperature when no activity is on');
+
+            // furnace morning activity starts
+            assert.equal(idleHeat, factory.getTemperature(9), 'idle temperature when morning starts up');
+            assert.equal(idleHeat + (furnaceWeight * furnaceHeat * ( Math.min(9.5 - 9, furnaceInertia) / furnaceInertia)),
+                factory.getTemperature(9.5), 'partial furnace morning contribution');
+            assert.equal(13 + (8 * 0.5 * ((1 * 0.5) / 1)),
+                factory.getTemperature(9.5), 'partial furnace morning contribution (figures)');
+            assert.equal(17,
+                factory.getTemperature(10), 'full furnace morning contribution');
+            assert.equal(17,
+                factory.getTemperature(11), 'full furnace morning contribution');
+            assert.equal(17,
+                factory.getTemperature(12), 'full furnace morning contribution at press noon start-up');
+
+            // press noon activity starts
+            assert.equal(17 + (pressWeight * pressHeat * ( Math.min(12.25 - 12, pressInertia) / pressInertia)),
+                factory.getTemperature(12.25), 'partial press noon contribution');
+            assert.equal(17 + 1.25 /* 2.5 * (0.25/0.5) */,
+                factory.getTemperature(12.25), 'partial press noon contribution (figures)');
+            assert.equal(13 + 4 + 2.5,
+                factory.getTemperature(12.5), 'full furnace morning and press noon contributions');
+            assert.equal(13 + 4 + 2.5,
+                factory.getTemperature(13), 'full furnace morning and press noon contributions');
+            assert.equal(13 + (4*0.5) + 2.5,
+                factory.getTemperature(13.5), 'full press noon and decaying furnace morning contributions');
+
+            // furnace morning stops, press noon activity
+            assert.equal(13 + (4*0) + 2.5,
+                factory.getTemperature(14), 'full press noon and decayed furnace morning contributions');
+
+            // furnace afternoon starts
+            assert.equal(13 + 2.5 + (4*0),
+                factory.getTemperature(15), 'full press noon contribution at afternoon furnace start-up');
+            assert.equal(13 + 2.5*(0.25/0.5) + 4*(0.25),
+                factory.getTemperature(15.25), 'decaying press noon and rising afternoon press contributions');
+
+            // press noon stops
+            assert.equal(13 + 2.5*(0) + 4*(0.5),
+                factory.getTemperature(15.5), 'decayed press noon and half afternoon press contributions');
+            assert.equal(13 + (4*0.5*0.5),
+                factory.getTemperature(15.75), 'partial afternoon press decay contribution');
+            assert.equal(13 + 4*0,
+                factory.getTemperature(16), 'fully-decayed afternoon press contribution');
+
+            assert.equal(idleHeat, factory.getTemperature(16.5), 'idle temperature after all activities have decayed');
+            assert.equal(idleHeat, factory.getTemperature(18), 'idle temperature after all activities have decayed');
+        });
+    });
 });

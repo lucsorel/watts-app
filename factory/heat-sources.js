@@ -1,17 +1,7 @@
 'use strict';
 
 // used to check business rules when constructing heat sources and activities
-var assert = require('assert');
-
-/**
- * Asserts that the value is a number in 0 and 24
- *
- * @param value
- * @param message
- */
-function assertDayHour(value, message) {
-    assert.equal(true, ('number' === typeof value) && value >= 0 && value < 24, message);
-}
+var assert = require('../test/assert-utils.js');
 
 /**
  * Models a period of time during which a heat source is on.
@@ -23,8 +13,8 @@ function assertDayHour(value, message) {
  */
 function Activity(startHour, endHour) {
     // business rules
-    assertDayHour(startHour, 'start hour must be in [0, 24[');
-    assertDayHour(endHour, 'end hour must be in [0, 24[');
+    assert.dayHour(startHour, 'start hour must be in [0, 24[');
+    assert.dayHour(endHour, 'end hour must be in [0, 24[');
     assert.equal(true, startHour < endHour, 'start hour must be inferior than end hour');
 
     this.startHour = startHour;
@@ -39,7 +29,7 @@ function Activity(startHour, endHour) {
  * @return true if startHour <= hour <= endHour
  */
 Activity.prototype.isOn = function (hour) {
-    assertDayHour(hour, 'hour must be in [0, 24[');
+    assert.dayHour(hour);
     return this.startHour <= hour && hour <= this.endHour;
 };
 
@@ -57,7 +47,7 @@ Activity.prototype.decayTime = function(inertiaDuration) {
  * @return a float value between 0 (no contribution) and 1 (full contribution)
  */
 Activity.prototype.heatContributionFactor = function(hour, inertiaDuration) {
-    assertDayHour(hour, 'hour must be in [0, 24[');
+    assert.dayHour(hour);
     assert.equal(true, ('number' === typeof inertiaDuration) && 0 < inertiaDuration, 'inertia duration must be a positive number');
 
     var contributionFactor;
@@ -152,7 +142,7 @@ function HeatSource(name, temperature, inertiaDuration, activities) {
  */
 HeatSource.prototype.isOn = function(hour) {
     // business rules
-    assertDayHour(hour, 'hour must be in [0, 24[');
+    assert.dayHour(hour);
 
     return this.activities.reduce(function(isOn, activity) {
         return isOn || activity.isOn(hour);
@@ -169,7 +159,7 @@ HeatSource.prototype.isOn = function(hour) {
  */
 HeatSource.prototype.heatContribution = function(hour) {
     // business rules
-    assertDayHour(hour, 'hour must be in [0, 24[');
+    assert.dayHour(hour);
 
     // multiplies the source temperature contribution by the sum of the contribution
     // factors of all the activities

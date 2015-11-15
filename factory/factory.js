@@ -1,7 +1,7 @@
 'use strict';
 
 // used to check business rules when constructing factories
-var assert = require('assert'),
+var assert = require('../test/assert-utils.js'),
     // heat sources dependencies
     HeatSources = require('./heat-sources.js'),
     HeatSource = HeatSources.HeatSource,
@@ -47,6 +47,14 @@ function Factory(name, idleTemperature) {
 Factory.prototype.addHeatSource = function(heatSource, weight) {
     this.heatSources.push(new FactoryHeatSource(heatSource, weight));
     return this;
+};
+
+Factory.prototype.getTemperature = function(hour) {
+    // business rules
+    assert.dayHour(hour);
+    return this.heatSources.reduce(function(temperature, factoryHeatSource) {
+        return temperature + (factoryHeatSource.weight * factoryHeatSource.heatSource.heatContribution(hour));
+    }, this.idleTemperature);
 };
 
 module.exports = {

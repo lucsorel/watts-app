@@ -14,4 +14,16 @@ assert.throwMessage = function(test, message, logErrorMessage) {
     });
 }
 
+/**
+ * Asserts that the value is a number between 0 and 24
+ *
+ * @param value
+ * @param message
+ */
+assert.dayHour = function(value, message) {
+    // default error message
+    message = message || 'hour must be in [0, 24[';
+    assert.equal(true, ('number' === typeof value) && value >= 0 && value < 24, message);
+}
+
 module.exports = assert;
