@@ -83,5 +83,7 @@ Factory.prototype.getTemperatureFormula = function() {
 
 module.exports = {
     Factory: Factory,
-    FactoryHeatSource: FactoryHeatSource
+    FactoryHeatSource: FactoryHeatSource,
+    HeatSource: HeatSource,
+    Activity: Activity
 };

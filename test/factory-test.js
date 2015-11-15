@@ -6,7 +6,7 @@ var assert = require('./assert-utils.js'),
     HeatSource = HeatSources.HeatSource,
     Activity = HeatSources.Activity,
 
-    Factories = require('../factory/factory.js'),
+    Factories = require('../factory/factories.js'),
     Factory = Factories.Factory,
     FactoryHeatSource = Factories.FactoryHeatSource;
 

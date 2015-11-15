@@ -1,0 +1,31 @@
+<html ng-app="WattsApp" ng-jq="" ng-strict-di="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+
+    <title>Watts application companion</title>
+
+    <style>[ng-cloak] {display: none !important;}</style>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.3.5/darkly/bootstrap.min.css" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/style/watts-app.less" type="text/less">
+
+    <!-- loads socket.io before AngularJS -->
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+
+  <body>
+    <div ui-view="">
+    </div>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/less.js/2.5.3/less.min.js" data-env="development"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <!-- AngularJS dependencies and application -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js"></script>
+    <script src="/js/socket-api.js"></script>
+    <script src="/js/watts-app.js"></script>
+    <!-- <script src="/js/controllers.js"></script> -->
+  </body>
+</html>
