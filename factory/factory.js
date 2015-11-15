@@ -49,6 +49,13 @@ Factory.prototype.addHeatSource = function(heatSource, weight) {
     return this;
 };
 
+/**
+ * Computes the factory temperature at the given moment by summing the heat
+ * contributions of all its heat sources activities
+ *
+ * @param hour an hour of the day as a numeric value in [0, 24[
+ * @return the temperature at the given moment
+ */
 Factory.prototype.getTemperature = function(hour) {
     // business rules
     assert.dayHour(hour);
