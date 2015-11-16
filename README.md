@@ -2,6 +2,21 @@ A sample application demonstrating how big data and connected objects can help e
 
 The application models a basic `factory` which is monitored by different probes, whose approximative values are aggregated in a map-reduce manner to provide an estimation of the factory temperature evolution.
 
+# Installation
+* this project runs a NodeJS backend. Version 4.2.2 was used. It can installed easily on lInux systems with:
+```bash
+sudo apt-get install curl
+curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
+sudo apt-get install nodejs
+```
+
+* then clone this repository
+* install the dependencies with `npm i`
+* start the web server with `npm start`
+* load the application in your browser at [http://localhost:3030/](http://localhost:3030/)
+
+Unit tests can be run with `npm test`.
+
 # Modeling
 The factory and its heat sources are modeled in a very rudimentary way. Its purposes is to create a dynamic temperature environment which will be monitored blindly by the probes.
 
