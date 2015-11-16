@@ -64,7 +64,8 @@
                     {{factoryCtrl.isSampling ? 'Stop' : 'Start'}} sampling
                 </button>
                 <p>Ok, let's start monitoring the factory!</p>
-                <br>
+                <p>Standard deviations of temperature are <span class="text-warning">orange</span> when their precision is below 1.5°C.</p>
+
                 <table class="table-condensed table-hover table-bordered">
                     <tr ng-repeat='key in factoryCtrl.lapseSampleKeys'>
                         <th class="sampleValue">{{:: key | sampleKey}}</th>
