@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('WattsApp', ['ui.router', 'SocketAPI'])
-// routing
+angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
+    // routing
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
         $stateProvider
             .state('root', {
@@ -10,7 +10,7 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
                 // makes the factory details available for the whole app
                 resolve: {
                     factory: ['socketAPI', function(socketAPI) {
-                        return socketAPI.qemit('factory.get');
+                        return socketAPI.qemit('factoryGet');
                     }]
                 },
                 templateUrl: 'templates/root.html',
@@ -59,24 +59,6 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
 
         return navigationService;
     }])
-    .filter('percentage', function() {
-        return function(input) {
-            if (isNaN(input)) {
-                return input;
-            }
-            return Math.floor(input * 100) + '%';
-        };
-    })
-
-    .filter('activity', function() {
-        return function(activity) {
-            if (('object' !== typeof activity) || isNaN(activity.startHour) || isNaN(activity.endHour)) {
-                return activity;
-            }
-
-            return activity.startHour + '-' + activity.endHour + 'h  ';
-        };
-    })
     // navigation controller
     .controller('NavigationController', ['factory', 'navigationService', function(factory, navigationService) {
         var ctrl = this;
@@ -84,7 +66,7 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
         ctrl.page = navigationService.page;
     }])
     // factory details controller
-    .controller('FactoryController', ['factory', 'socketAPI', function(factory, socketAPI) {
+    .controller('FactoryController', ['$scope', 'factory', 'socketAPI', function($scope, factory, socketAPI) {
         var ctrl = this;
         ctrl.factory = factory;
 
@@ -94,11 +76,11 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
                 target: '#factoryTemperaturePlot',
                 disableZoom: true,
                 xDomain: [0, 24],
-                yDomain: [10, 24],
+                yDomain: [10, 22],
                 data: [{
-                    range: [0, 24],
-                    fn: math.eval(factory.formula)
-                }]
+                        range: [0, 24],
+                        fn: math.eval(factory.formula)
+                    }]
             });
         }
         catch (err) {
@@ -106,25 +88,51 @@ angular.module('WattsApp', ['ui.router', 'SocketAPI'])
             alert(err);
         }
 
-        ctrl.isSampling = false;
-        ctrl.switchSampling = function() {
-            ctrl.isSampling = !ctrl.isSampling;
-
-            socketAPI.emit(ctrl.isSampling ? 'sampling.start' : 'sampling.stop');
-        }
-
         // flags the properties of the lapse samples to display them column-wise
-        ctrl.lapseSampleKeys = ['timeslot', 'meanT', 'stdT', 'nbSamples'];
+        ctrl.lapseSampleKeys = ['timeslot', 'meanT', 'stdD', 'nbSamples'];
         factory.heatSources.forEach(function(factoryHeatSource) {
             ctrl.lapseSampleKeys.push(factoryHeatSource.heatSource.name);
         });
 
         // flags the map-reduced samples
-        ctrl.lapseSamples = {};
-        function onSampleUpdate(lapseSample) {
-            ctrl.lapseSamples[lapseSample.id] = lapseSample;
+        ctrl.lapseSamples = [];
+        ctrl.onSampleUpdate = function(updatedLapseSample) {
+            // transforms the laps sample
+            updatedLapseSample.stdD = Math.sqrt(updatedLapseSample.meanSquares - Math.pow(updatedLapseSample.meanT, 2));
+            delete updatedLapseSample.meanSquares;
+            updatedLapseSample.statusesOn.forEach(function(device) {
+                updatedLapseSample[device] = true;
+            });
+            updatedLapseSample.statusesOff.forEach(function(device) {
+                updatedLapseSample[device] = false;
+            });
+
+            // adds or replace the lapse sample
+            var index = ctrl.lapseSamples.reduce(function(indexToUpdate, lapseSample, index) {
+                return (lapseSample.id === updatedLapseSample.id) ? index : indexToUpdate;
+            }, -1);
+            if (-1 === index) {
+                ctrl.lapseSamples.push(updatedLapseSample);
+            }
+            else {
+                ctrl.lapseSamples[index] = updatedLapseSample;
+            }
+        }
+        // updates the data when receiving updated samples
+        socketAPI.on('lapseSampleUpdate', ctrl.onSampleUpdate);
+
+        ctrl.isSampling = false;
+        ctrl.switchSampling = function() {
+            ctrl.isSampling = !ctrl.isSampling;
+
+            socketAPI.emit(ctrl.isSampling ? 'samplingStart' : 'samplingStop');
         }
 
-        socketAPI.on('lapseSample.update', onSampleUpdate);
+        // stops monitoring when leaving the controller
+        $scope.$on('$destroy', function() {
+            if (ctrl.isSampling) {
+                ctrl.switchSampling();
+            }
+        });
     }])
 ;

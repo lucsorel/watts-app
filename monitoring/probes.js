@@ -9,7 +9,6 @@ var Rx = require('rx'),
 function noise(value, deviationRange) {
     // defaults the range of the noise to 1: the noise will vary from -0.5 to 0.5
     deviationRange = deviationRange || 1;
-    console.log('noising value ' + value);
     return value + deviationRange*(0.5 - Math.random());
 }
 
@@ -22,13 +21,14 @@ function noise(value, deviationRange) {
  * @return the probes described by the monitored items and the events channel of monitoring data
  */
 module.exports = function(factory) {
-    var monitoredItems = [factory];
+    // factory added twice to increase its sampling frequency
+    var monitoredItems = [factory, factory];
     factory.heatSources.forEach(function(factoryHeatSource) {
         monitoredItems.push(factoryHeatSource.heatSource);
     });
 
     // timer triggering sample events (500ms before producing 1st value and between values)
-    var probeEvents = Rx.Observable.timer(500, 1000)
+    var probeEvents = Rx.Observable.timer(500, 200)
         // randomly selects a monitored item
         .map(function() {
             return monitoredItems[Math.floor(monitoredItems.length * Math.random())];
@@ -36,17 +36,15 @@ module.exports = function(factory) {
         // monitors it
         .map(function(monitoredItem) {
             // initializes the probe data with a random hour in the day
-            var probeData = { hour: 24*Math.random() };
+            var probeData = { hour: 24 * Math.random() };
 
-            // monitors the factory temperature
+            // monitors the factory temperature with a 5°C noise range
             if (monitoredItem instanceof Factory) {
-                console.log('sampling temperature at ' + probeData.hour);
-                probeData.temperature = noise(factory.getTemperature(probeData.hour));
+                probeData.temperature = noise(factory.getTemperature(probeData.hour), 5);
             }
             else if (monitoredItem instanceof HeatSource) {
                 probeData.heatSource = monitoredItem.name;
-                probeData.status = monitoredItem.isOn(probeData.hour) ? 'on' : 'off';
-                console.log('sampling ' + probeData.heatSource + ' status at ' + probeData.hour);
+                probeData.isOn = monitoredItem.isOn(probeData.hour);
             }
 
             return probeData;

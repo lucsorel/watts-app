@@ -16,7 +16,8 @@ http.listen(3030, function() {
 // handles a websocket connection
 io.sockets.on('connection', require('./api/socket')(
     require('./factory/factories'),
-    require('./monitoring/probes')));
+    require('./monitoring/probes'),
+    require('./monitoring/map-reducers')));
 
 // shuts the application down on low-level errors
 function shutdown() {
