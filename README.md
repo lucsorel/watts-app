@@ -3,14 +3,18 @@ A sample application demonstrating how big data and connected objects can help e
 The application models a basic `factory` which is monitored by different probes, whose approximative values are aggregated in a map-reduce manner to provide an estimation of the factory temperature evolution.
 
 # Installation
-* this project runs a NodeJS backend. Version 4.2.2 was used. It can installed easily on lInux systems with:
+* this project runs a NodeJS backend. Version 4.2.2 was used. It can installed easily on Linux systems with:
 ```bash
 sudo apt-get install curl
 curl -sL https://deb.nodesource.com/setup_4.x | sudo bash -
 sudo apt-get install nodejs
 ```
+When upgrading from an older version (check with `nodejs --version`), remove ``nodejs`` and ``npm`` beforehand:
+```bash
+sudo apt-get purge nodejs npm
+```
 
-* then clone this repository
+* then clone this repository (`git clone https://github.com/lucsorel/watts-app.git`)
 * install the dependencies with `npm i`
 * start the web server with `npm start`
 * load the application in your browser at [http://localhost:3030/](http://localhost:3030/)
