@@ -70,23 +70,40 @@ angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
         var ctrl = this;
         ctrl.factory = factory;
 
-        // draws the factory temperature plot
-        try {
-            functionPlot({
-                target: '#factoryTemperaturePlot',
-                disableZoom: true,
-                xDomain: [0, 24],
-                yDomain: [10, 22],
-                data: [{
-                        range: [0, 24],
-                        fn: math.eval(factory.formula)
-                    }]
-            });
+        // the raw temperature evolution formula issued by the monitoring
+        var monitoringRawFormula = 'f(t) = 0';
+
+        // settings for the temperature plots
+        var plotSettings = {
+            target: '#factoryTemperaturePlot',
+            disableZoom: true,
+            xDomain: [0, 24],
+            yDomain: [10, 22],
+            data: [{
+                    range: [0, 24],
+                    fn: math.eval(factory.formula)
+                }
+            ]
+        };
+        var monitoredData = {
+            range: [0, 24],
+            fn: math.eval(monitoringRawFormula)
+        };
+        plotSettings.data.push(monitoredData);
+
+        // draws the "real" and monitored factory temperature plot
+        ctrl.drawTemperaturePlot = function() {
+            try {
+                functionPlot(plotSettings);
+            }
+            catch (err) {
+                console.log(err);
+                alert(err);
+            }
         }
-        catch (err) {
-            console.log(err);
-            alert(err);
-        }
+
+        // initial rendering of the factory temperature plot
+        ctrl.drawTemperaturePlot(monitoringRawFormula);
 
         // flags the properties of the lapse samples to display them column-wise
         ctrl.lapseSampleKeys = ['timeslot', 'meanT', 'stdD', 'nbSamples'];
@@ -117,7 +134,19 @@ angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
             else {
                 ctrl.lapseSamples[index] = updatedLapseSample;
             }
+
+            // updates the temperature plot
+            monitoredData.fn = math.eval(ctrl.lapseSamples.reduce(function(formula, lapseSamples) {
+                if (!isNaN(lapseSamples.meanT) && lapseSamples.meanT > 0) {
+                    formula += ' + (('+lapseSamples.id+' <= t and t < '
+                        +(lapseSamples.id + 1) + ') ? ' + lapseSamples.meanT + ' : 0)';
+                }
+
+                return formula;
+            }, monitoringRawFormula));
+            ctrl.drawTemperaturePlot();
         }
+
         // updates the data when receiving updated samples
         socketAPI.on('lapseSampleUpdate', ctrl.onSampleUpdate);
 
