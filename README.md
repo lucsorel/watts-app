@@ -17,8 +17,9 @@ sudo apt-get purge nodejs npm
 
 * then clone this repository (`git clone https://github.com/lucsorel/watts-app.git`)
 * install the dependencies with `npm i`
-* start the web server with `npm start`
-* load the application in your browser at [http://localhost:3030/](http://localhost:3030/)
+* two ways to start the application:
+  * start the web server with `npm start` and view the web app in your browser at [http://localhost:3030/](http://localhost:3030/)
+  * OR start the server and wrap the web app in a desktop window with `npm run desktop`. It uses the [electron.atom.io](http://electron.atom.io/) technology
 
 Unit tests can be run with `npm test`.
 
