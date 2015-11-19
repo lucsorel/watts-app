@@ -148,7 +148,7 @@ angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
         }
 
         // updates the data when receiving updated samples
-        socketAPI.on('lapseSampleUpdate', ctrl.onSampleUpdate);
+        socketAPI.on('lapseSampleUpdate', ctrl.onSampleUpdate, $scope);
 
         ctrl.isSampling = false;
         ctrl.switchSampling = function() {
@@ -157,7 +157,7 @@ angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
             socketAPI.emit(ctrl.isSampling ? 'samplingStart' : 'samplingStop');
         }
 
-        // stops monitoring when leaving the controller
+        // cleanup when leaving the connector: stops monitoring, removes the socket handler
         $scope.$on('$destroy', function() {
             if (ctrl.isSampling) {
                 ctrl.switchSampling();

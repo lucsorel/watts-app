@@ -31,13 +31,25 @@ angular.module('SocketAPI', [])
         // the socketAPI service
         var socketAPI = {
             /** listens for a server event */
-            on: function (eventName, callback) {
+            on: function (eventName, callback, scope) {
                 onConnectedSocket().then(function(socket) {
-                    socket.on(eventName, function () {
-                        var args = arguments;
-                        $rootScope.$apply(function () {
-                            callback.apply(socket, args);
-                        });
+                    // ensures the scope has not been destroyed while waiting for a connected socket
+                    if (scope != handler) {
+                        // includes the callback in the AngularJS digest cycle
+                        var handler = function() {
+                            var args = arguments;
+                            $rootScope.$apply(function () {
+                                callback.apply(socket, args);
+                            });
+                        };
+
+                        socket.on(eventName, handler);
+                    }
+
+                    // stops listening to the event channel at scope destruction
+                    scope.$on('$destroy', function() {
+                        socket.removeListener(eventName, handler);
+                        handler = null;
                     });
                 });
             },
