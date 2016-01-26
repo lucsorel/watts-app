@@ -2,15 +2,16 @@
 var express = require('express'),
     wattsApp = express(),
     http = require('http').Server(wattsApp),
-    io = require('socket.io')(http);
+    io = require('socket.io')(http),
+    httpPort = process.env.PORT || 3030;
 
 // serves the webapp
 wattsApp.use(express.static('webapp'));
 wattsApp.use(express.static('node_modules/function-plot/dist'));
 
 // starts the web aplication server on the configured HTTP port
-http.listen(3030, function() {
-    console.log('listening on *:' + 3030 + '\nctrl+c to stop the app');
+http.listen(httpPort, function() {
+    console.log('listening on *:' + httpPort + '\nctrl+c to stop the app');
 });
 
 // handles a websocket connection
