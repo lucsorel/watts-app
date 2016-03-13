@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
+angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketIoNgService'])
     // routing
     .config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
         $stateProvider
@@ -9,8 +9,8 @@ angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
                 url: '/',
                 // makes the factory details available for the whole app
                 resolve: {
-                    factory: ['socketAPI', function(socketAPI) {
-                        return socketAPI.qemit('factoryGet');
+                    factory: ['socketService', function(socketService) {
+                        return socketService.qemit('factoryGet');
                     }]
                 },
                 templateUrl: 'templates/root.html',
@@ -66,7 +66,7 @@ angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
         ctrl.page = navigationService.page;
     }])
     // factory details controller
-    .controller('FactoryController', ['$scope', 'factory', 'socketAPI', function($scope, factory, socketAPI) {
+    .controller('FactoryController', ['$scope', 'factory', 'socketService', function($scope, factory, socketService) {
         var ctrl = this;
         ctrl.factory = factory;
 
@@ -148,13 +148,13 @@ angular.module('WattsApp', ['ngSanitize', 'ui.router', 'SocketAPI'])
         }
 
         // updates the data when receiving updated samples
-        socketAPI.on('lapseSampleUpdate', ctrl.onSampleUpdate, $scope);
+        socketService.on('lapseSampleUpdate', ctrl.onSampleUpdate, $scope);
 
         ctrl.isSampling = false;
         ctrl.switchSampling = function() {
             ctrl.isSampling = !ctrl.isSampling;
 
-            socketAPI.emit(ctrl.isSampling ? 'samplingStart' : 'samplingStop');
+            socketService.emit(ctrl.isSampling ? 'samplingStart' : 'samplingStop');
         }
 
         // cleanup when leaving the connector: stops monitoring, removes the socket handler

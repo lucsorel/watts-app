@@ -5,9 +5,10 @@ var express = require('express'),
     io = require('socket.io')(http),
     httpPort = process.env.PORT || 3030;
 
-// serves the webapp
+// serves the webapp and some browser dependencies
 wattsApp.use(express.static('www'));
 wattsApp.use(express.static('node_modules/function-plot/dist'));
+wattsApp.use(express.static('node_modules/socket-io-ng-service/libs'));
 
 // starts the web aplication server on the configured HTTP port
 http.listen(httpPort, function() {

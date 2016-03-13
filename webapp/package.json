@@ -31,6 +31,7 @@
   "dependencies": {
     "express": "^4.13.3",
     "rx": "^4.0.7",
+    "socket-io-ng-service": "lucsorel/socket-io-ng-service",
     "socket.io": "^1.3.7"
   },
   "engines": {
