@@ -1,0 +1,4 @@
+webapp:
+    build: webapp
+    ports:
+        - "3030:3030"

@@ -1,4 +1,5 @@
 # Webapp Docker image and container
+## Step by step
 * build the `webapp` Docker image with (as `root` user):
 ```bash
 sudo su
@@ -29,4 +30,20 @@ docker logs webapp
 ```bash
 docker stop webapp
 docker rm webapp
+```
+
+## Using docker-compose
+```bash
+sudo su
+cd watts-app
+# builds the images and runs the containers
+docker-compose up
+
+# ctrl+c to stop the containers
+
+# deletes the containers (before restarting them with docker-compose up)
+docker rm wattsapp_webapp_1
+
+# deletes the containers and images
+docker rm wattsapp_webapp_1 && docker rmi wattsapp_webapp
 ```
