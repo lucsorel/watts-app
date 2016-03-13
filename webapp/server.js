@@ -6,7 +6,7 @@ var express = require('express'),
     httpPort = process.env.PORT || 3030;
 
 // serves the webapp
-wattsApp.use(express.static('webapp'));
+wattsApp.use(express.static('www'));
 wattsApp.use(express.static('node_modules/function-plot/dist'));
 
 // starts the web aplication server on the configured HTTP port
