@@ -1,7 +1,7 @@
 # use this Dockerfile to build the image from the local source code with:
-# docker build -t files/watts-app-webapp .
+# docker build -t lucsorel/watts-app:webapp .
 # run the container with:
-# docker run -p 3030:3030 -p 6969:6969 --name webapp -d files/watts-app-webapp
+# docker run -p 3030:3030 -p 6969:6969 --name webapp -d lucsorel/watts-app:webapp
 FROM lucsorel/zeromq-bindings:alpinelinux3.3-zeromq4.3.x-nodejs4.3.x
 MAINTAINER Luc Sorel
 
