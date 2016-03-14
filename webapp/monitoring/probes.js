@@ -21,15 +21,15 @@ function noise(value, deviationRange) {
  * @return the probes described by the monitored items and the events channel of monitoring data
  */
 module.exports = function(factory) {
-    // factory added twice to increase its sampling frequency
+    // factory added twice to increase the temperature sampling frequency
     var monitoredItems = [factory, factory];
     factory.heatSources.forEach(function(factoryHeatSource) {
         monitoredItems.push(factoryHeatSource.heatSource);
     });
 
-    // timer triggering sample events (500ms before producing 1st value and between values)
+    // timer triggering sample events (500ms before producing 1st value and 200ms between values)
     var probeEvents = Rx.Observable.timer(500, 200)
-        // randomly selects a monitored item
+        // randomly selects a monitored item (tactory temperature or heat source on/off status)
         .map(function() {
             return monitoredItems[Math.floor(monitoredItems.length * Math.random())];
         })

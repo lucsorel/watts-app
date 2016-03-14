@@ -1,0 +1,40 @@
+<table class="table table-striped table-hover">
+    <col></col>
+    <colgroup span="3"></colgroup>
+    <colgroup span="2"></colgroup>
+    <thead>
+        <td></td>
+        <th colspan="3" scope="colgroup">Modelled</th>
+        <th colspan="2" scope="colgroup">Regression</th>
+    </thead>
+    <tr>
+        <th>Device</th>
+        <th>heat</th>
+        <th>factor</th>
+        <th>theoretical contribution</th>
+        <th colspan="2" scope="colgroup">estimated contribution</th>
+    </tr>
+    <tbody>
+        <tr ng-repeat="heatSource in faCtrl.factory.heatSources | orderBy:heatSource.heatSource.name">
+            <td>{{::heatSource.heatSource.name}}</td>
+            <td>{{::heatSource.heatSource.temperature}}°C</td>
+            <td>{{::heatSource.weight | percentage}}</td>
+            <td>{{::heatSource.heatSource.temperature * heatSource.weight}}°C</td>
+            <td colspan="2" scope="colgroup">
+                <span ng-show="heatSource.contribution">{{heatSource.contribution | number:2}}°C</span>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="3" scope="colgroup"></td>
+            <td>Factory base temperature:</td>
+            <td><span ng-show="faCtrl.factory.meanT">{{faCtrl.factory.meanT | number:2}}°C</span></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan="3" scope="colgroup"></td>
+            <td>Confidence R<sup>2</sup>:</td>
+            <td><span ng-class="faCtrl.factory.confidence < 0.33 ? 'text-danger' : (faCtrl.factory.confidence < 0.66 ? 'text-warning' : 'text-success')">{{faCtrl.factory.confidence | percentage}}</span></td>
+        </tr>
+    </tbody>
+</table>

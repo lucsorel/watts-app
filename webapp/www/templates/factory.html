@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="well">
-                <p>The <b>{{::factoryCtrl.factory.name}}</b> factory is equipped with several probes which monitor different parameters:</p>
+                <p>The <i><b>{{::factoryCtrl.factory.name}}</b></i> factory is equipped with several probes which monitor different parameters:</p>
                 <ul>
                     <li>one which monitors the <b>factory global temperature</b></li>
                     <li>one per device, simply detecting whether <b>the device is on or off</b></li>
@@ -15,35 +15,20 @@
         </div>
     </div>
 
-    <h2>Factory modeling</h2>
+    <h2>Factory modelling (as a replacement for real probes)</h2>
     <div class="row">
         <div class="col-md-5">
             <div class="well">
-                <div>Factory name: <b>{{::factoryCtrl.factory.name}}</b></div>
-                <br>
-                <div class="">Heat sources:</div>
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <th>Device</th>
-                        <th>heat</th>
-                        <th>factor</th>
-                        <th>inertia</th>
-                        <th>activities</th>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="heatSource in factoryCtrl.factory.heatSources">
-                            <td>{{::heatSource.heatSource.name}}</td>
-                            <td>{{::heatSource.heatSource.temperature}}°C</td>
-                            <td>{{::heatSource.weight | percentage}}</td>
-                            <td>{{::heatSource.heatSource.inertiaDuration}} hour</td>
-                            <td>
-                                <span ng-repeat="activity in heatSource.heatSource.activities">
-                                {{::activity | activity}}
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p>The devices of <i>{{::factoryCtrl.factory.name}}</i> are <strong>heat sources</strong> characterized by:
+                    <ul>
+                        <li>a nominal <strong>heat</strong> (in <i>°C</i>)</li>
+                        <li>a <strong>contribution factor</strong> to the temperature of the factory (in <i>%</i>)</li>
+                        <li>an <strong>inertia</strong>, which is the time it takes for the device to be at full heat (in <i>hour</i>)</li>
+                        <li>some <strong>activity periods</strong> during which their heat contributes to the factory temperature then decays (with linear inertia)</li>
+                    </ul>
+                </p>
+
+                <factory-devices factory="factoryCtrl.factory"></factory-devices>
             </div>
         </div>
 
@@ -51,7 +36,10 @@
             <div class="well">
                 <div>Evolution of the factory temperature (°C) during the day (hour)</div>
                 <div id="factoryTemperaturePlot"></div>
-                <div>Plotted temperatues: <span class="text-info">"actual"</span> (from the model), <span class="text-danger">red</span> (hourly averaged from the probes).</li>
+                <div>
+                    Plotted temperatures:
+                    <span class="text-info">theoretical evolution</span> (usually unavailable, here for demo purpose),
+                    <span class="text-danger">hourly-averaged measures</span> from the probes (when monitoring).
                 </div>
             </div>
         </div>
@@ -63,9 +51,9 @@
             <div class="well">
                 <button type="button" class="btn pull-right" ng-click="factoryCtrl.switchSampling()"
                     ng-class="factoryCtrl.isSampling ? 'btn-danger' : 'btn-primary'">
-                    {{factoryCtrl.isSampling ? 'Stop' : 'Start'}} sampling
+                    {{factoryCtrl.isSampling ? 'Stop' : 'Start'}} monitoring
                 </button>
-                <p>Ok, let's start monitoring the factory!</p>
+                <p>Ok, let's start monitoring the factory (its mean temperature and the on/off status of its devices).</p>
                 <p>Standard deviations of temperature are <span class="text-warning">orange</span> when their precision is below 1.5°C.</p>
 
                 <table class="table-condensed table-hover table-bordered">
@@ -76,6 +64,26 @@
                         </td>
                     </tr>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <h2>Analysis</h2>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="well">
+                <p>When monitoring the factory, a dynamic linear regression is performed to assess the heat contribution of each device on the factory mean temperature.</p>
+
+                <p>
+                    The table below shows:
+                    <ul>
+                        <li>a comparison between the modelled and the estimated heat contributions of each device</li>
+                        <li>an estimation of the factory base temperature (its temperature when all devices are off)</li>
+                        <li>the coefficient of determination of the whole regression (its relevance)</li>
+                    </ul>
+                </p>
+
+                <factory-analysis factory="factoryCtrl.factory"></factory-analysis>
             </div>
         </div>
     </div>

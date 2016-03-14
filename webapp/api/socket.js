@@ -47,14 +47,37 @@ module.exports = function(Factories, Probes, Reducers) {
             dataCallback(factory);
         });
 
-        var lapseSamplesProducer = Reducers.probeEventsReducer(Probes(factory).events);
-        var probesSubscription = null;
+        var factoryProbesEventProducers = Reducers.probesEventProducers(Probes(factory).events),
+            lapseSamplesProducer = factoryProbesEventProducers.lapseSamplesProducer,
+            modelsProducer = factoryProbesEventProducers.modelsProducer,
+            laspeSamplesSubscription = null,
+            modelsSubscription = null;
+
         socket.on('samplingStart', function() {
-            if (null === probesSubscription) {
-                probesSubscription = lapseSamplesProducer.subscribe(
+            if (null === laspeSamplesSubscription) {
+                // emits incoming laps samples
+                laspeSamplesSubscription = lapseSamplesProducer.subscribe(
                     function (lapseSample) {
                         // emits the updated lapse sample to the client
-                        socket.emit('lapseSampleUpdate', lapseSample);
+                        if (null !== lapseSample) {
+                            socket.emit('lapseSampleUpdate', lapseSample);
+                        }
+                    },
+                    function (err) {
+                        console.log('Monitoring error: ' + err);
+                    },
+                    function () {
+                        console.log('Monitoring completed');
+                    });
+            }
+            if (null === modelsSubscription) {
+                // emits incoming laps samples
+                modelsSubscription = modelsProducer.subscribe(
+                    function (model) {
+                        // emits the updated model to the client
+                        if (null !== model) {
+                            socket.emit('modelUpdate', model);
+                        }
                     },
                     function (err) {
                         console.log('Monitoring error: ' + err);
@@ -64,19 +87,20 @@ module.exports = function(Factories, Probes, Reducers) {
                     });
             }
         });
+        // stops the subscriptions to the lapseSamples and models producers
+        function disposeSubscriptions() {
+            if (null !== laspeSamplesSubscription) {
+                laspeSamplesSubscription.dispose();
+                laspeSamplesSubscription = null;
+            }
+            if (null !== modelsSubscription) {
+                modelsSubscription.dispose();
+                modelsSubscription = null;
+            }
+        }
 
-        // stops monitoring
-        socket.on('disconnect', function() {
-            if (null !== probesSubscription) {
-                probesSubscription.dispose();
-                probesSubscription = null;
-            }
-        });
-        socket.on('samplingStop', function() {
-            if (null !== probesSubscription) {
-                probesSubscription.dispose();
-                probesSubscription = null;
-            }
-        });
+        // stops monitoring on websocket disconnection or stop sampling
+        socket.on('disconnect', disposeSubscriptions);
+        socket.on('samplingStop', disposeSubscriptions);
     }
 };

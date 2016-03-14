@@ -1,0 +1,22 @@
+<table class="table table-striped table-hover">
+    <thead>
+        <th>Device</th>
+        <th>heat</th>
+        <th>factor</th>
+        <th>inertia</th>
+        <th>activities</th>
+    </thead>
+    <tbody>
+        <tr ng-repeat="heatSource in fdCtrl.factory.heatSources | orderBy:heatSource.heatSource.name">
+            <td>{{::heatSource.heatSource.name}}</td>
+            <td>{{::heatSource.heatSource.temperature}}°C</td>
+            <td>{{::heatSource.weight | percentage}}</td>
+            <td>{{::heatSource.heatSource.inertiaDuration}} hour</td>
+            <td>
+                <span ng-repeat="activity in heatSource.heatSource.activities">
+                {{::activity | activity}}
+                </span>
+            </td>
+        </tr>
+    </tbody>
+</table>
