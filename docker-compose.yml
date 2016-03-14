@@ -8,6 +8,6 @@ webapp:
         - datamining
 
 datamining:
-    build: data_mining
+    build: datamining
     environment:
         - SAMPLES_TCP_URL=*:6969
