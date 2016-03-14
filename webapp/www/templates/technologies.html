@@ -1,0 +1,52 @@
+<div class="container-fluid">
+    <div class="page-header">
+        <h2>Technologies involved in this project</h2>
+    </div>
+
+    <h3>Applications</h3>
+
+    <div class="row well">
+        <div class="col-sm-4">
+            <p>Web server:</p>
+            <ul>
+                <li>Web server: <a href="https://nodejs.org/" target="_blank">NodeJS</a> &amp; <a href="http://expressjs.com/" target="_blank">ExpressJS</a>, <a href="http://socket.io/" target="_blank">Socket.IO</a> for websockets</li>
+                <li>Reactive programming: <a href="https://github.com/tildeio/rsvp.js" target="_blank">RSVP promises</a> &amp; <a href="https://github.com/Reactive-Extensions/RxJS" target="_blank">RxJs</a></li>
+                <li>Unit tests with <a href="https://mochajs.org/" target="_blank">Mocha</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <p>Front:</p>
+            <ul>
+                <li><a href="https://angularjs.org/" target="_blank">AngularJS</a> &amp;<a href="https://angular-ui.github.io/ui-router/" target="_blank">UI router</a></li>
+                <li><a href="http://getbootstrap.com/" target="_blank">BootstrapCSS</a> &amp; <a href="http://lesscss.org/" target="_blank">Less CSS</a></li>
+                <li><a href="http://mathjs.org/" target="_blank">Math.js</a> &amp; <a href="http://maurizzzio.github.io/function-plot/" target="_blank">Function plot</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <p>Data analysis:</p>
+            <ul>
+                <li><a href="https://www.python.org/" target="_blank">Python</a> server</li>
+                <li><a href="http://scikit-learn.org/" target="_blank">Scikit-learn</a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-12">The data-analysis and web applications interact with the <a href="http://zeromq.org/" target="_blank">ZeroMQ</a> distributed messaging library, which has Python and NodeJS bindings.</div>
+    </div>
+
+    <h3>Architecture</h3>
+
+    <div class="row well">
+        <div class="col-sm-4">
+            <p>Source code:</p>
+            <p>The project source is hosted at <a href="https://github.com/lucsorel/watts-app" target="_blank">github.com/lucsorel/watts-app</a> along other projects, have a look at them!</p>
+        </div>
+        <div class="col-sm-4">
+            <p>Containers:</p>
+            <p>The datamining and web servers are isolated in <a href="https://www.docker.com/" target="_blank">Docker</a> containers. Their images are hosted on the <a href="https://hub.docker.com/r/lucsorel/watts-app/" target="_blank">lucsorel/watts-app Docker Cloud</a> repository.</p>
+        </div>
+        <div class="col-sm-4">
+            <p>Hosting:</p>
+            <p>This application runs on an <a href="https://aws.amazon.com/fr/ec2/" target="_blank">Amazon Web Service EC2 node</a> (a small free one...), driven by the <a href="https://cloud.docker.com/" target="_blank">Docker Cloud</a> cluster manager.</p>
+        </div>
+    </div>
+</div>
