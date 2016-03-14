@@ -1,0 +1,14 @@
+webapp:
+  image: lucsorel/watts-app:webapp
+  environment:
+    - SAMPLES_TCP_URL=datamining:6969
+  ports:
+    - "80:3030"
+  links:
+    - datamining
+
+datamining:
+  image: lucsorel/watts-app:datamining
+  environment:
+    - SAMPLES_TCP_URL=*:6969
+
