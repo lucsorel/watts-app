@@ -58,9 +58,9 @@
 
                 <table class="table-condensed table-hover table-bordered">
                     <tr ng-repeat='key in factoryCtrl.lapseSampleKeys'>
-                        <th class="sampleValue">{{:: key | sampleKey}}</th>
-                        <td class="sampleValue" ng-repeat="lapseSample in factoryCtrl.lapseSamples | orderBy: 'id' track by lapseSample.id"
-                            ng-bind-html="lapseSample[key] | valueKey:key">
+                        <th class="sampleValue flash">{{:: key | sampleKey}}</th>
+                        <td class="sampleValue" ng-class="{flash: lapseSample[key] != null && lapseSample[key] != ''}" ng-repeat="lapseSample in factoryCtrl.lapseSamples | orderBy: 'id' track by lapseSample.id"
+                                ng-bind-html="lapseSample[key] | valueKey:key">
                         </td>
                     </tr>
                 </table>

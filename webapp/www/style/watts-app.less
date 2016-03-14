@@ -5,6 +5,37 @@ body {
     background-color: #aaa;
     margin-top: 1em;
 }
+.animation(@name, @duration:1s, @type:ease-in-out, @count:1) {
+	-webkit-animation:@name @duration @type @count;
+	-moz-animation:@name @duration @type @count;
+	-ms-animation:@name @duration @type @count;
+	-o-animation:@name @duration @type @count;
+	animation:@name @duration @type @count;
+}
+.flash {
+    .animation(sampleBgdFadeOut, 1s, ease-out, 1);
+    .logFadeOutFrames {
+        from {
+            background-color: gray;
+        }
+        to {
+            background-color: transparent;
+        }
+    }
+    @-webkit-keyframes sampleBgdFadeOut {
+        .logFadeOutFrames
+    }
+    @-moz-keyframes sampleBgdFadeOut {
+        .logFadeOutFrames
+    }
+    @-ms-keyframes sampleBgdFadeOut {
+        .logFadeOutFrames
+    }
+    @keyframes sampleBgdFadeOut {
+        .logFadeOutFrames
+    }
+}
+
 th.sampleValue {
     font-size: 0.75em;
 }
