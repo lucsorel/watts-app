@@ -1,4 +1,13 @@
 webapp:
     build: webapp
+    environment:
+        - SAMPLES_TCP_URL=datamining:6969
     ports:
         - "3030:3030"
+    links:
+        - datamining
+
+datamining:
+    build: data_mining
+    environment:
+        - SAMPLES_TCP_URL=*:6969
