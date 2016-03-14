@@ -53,6 +53,12 @@ module.exports = function(Factories, Probes, Reducers) {
             laspeSamplesSubscription = null,
             modelsSubscription = null;
 
+        // bulk-returns the lapse samples
+        socket.on('lapseSamples', function(params, dataCallback) {
+            dataCallback(factoryProbesEventProducers.getTimeLapses());
+        })
+
+        // starts monitoring: subscribes to the event producers
         socket.on('samplingStart', function() {
             if (null === laspeSamplesSubscription) {
                 // emits incoming laps samples

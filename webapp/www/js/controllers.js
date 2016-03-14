@@ -111,6 +111,13 @@ angular.module('WattsApp')
             socketService.emit(ctrl.isSampling ? 'samplingStart' : 'samplingStop');
         }
 
+        // retrieves the existing lapse samples to initialize the monitoring table
+        socketService.qemit('lapseSamples').then(function(lapseSamplesResponse) {
+            Object.keys(lapseSamplesResponse).forEach(function(lapseSampleKey) {
+                ctrl.onSampleUpdate(lapseSamplesResponse[lapseSampleKey]);
+            })
+        });
+
         // cleanup when leaving the connector: stops monitoring, removes the socket handler
         $scope.$on('$destroy', function() {
             if (ctrl.isSampling) {
