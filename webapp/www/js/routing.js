@@ -30,6 +30,19 @@ angular.module('WattsApp')
                     }
                 }
             })
+            .state('root.technologies', {
+                url: 'technologies',
+                resolve: {
+                    page: ['navigationService', function(navigationService) {
+                        return navigationService.setViewName('technologies');
+                    }]
+                },
+                views: {
+                    'contact': {
+                        templateUrl: 'templates/technologies.html'
+                    }
+                }
+            })
             .state('root.contact', {
                 url: 'contact',
                 resolve: {
