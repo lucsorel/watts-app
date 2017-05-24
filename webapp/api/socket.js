@@ -21,6 +21,7 @@ module.exports = function(Factories, Probes, Reducers) {
         furnaceWeight = 0.5,
         furnace = new HeatSource('furnace', furnaceHeat, furnaceInertia, [morningActivity, afternoonActivity]);
 
+    // activity during noon
     var noonActivity = new Activity(12, 15),
         pressHeat = 10,
         pressInertia = 0.5,
